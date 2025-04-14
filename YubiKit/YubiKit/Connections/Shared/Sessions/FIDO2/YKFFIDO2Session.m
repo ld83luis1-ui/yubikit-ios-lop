@@ -271,18 +271,18 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
         NSData *oldPinData = [oldPin dataUsingEncoding:NSUTF8StringEncoding];
         NSData *newPinData = [[newPin dataUsingEncoding:NSUTF8StringEncoding] ykf_fido2PaddedPinData];
 
-        changePinRequest.pinProtocol = 1;
+        changePinRequest.pinProtocol = self.pinProtocol;
         changePinRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandChangePIN;
         changePinRequest.keyAgreement = cosePlatformPublicKey;
 
         NSData *oldPinHash = [[oldPinData ykf_SHA256] subdataWithRange:NSMakeRange(0, 16)];
-        changePinRequest.pinHashEnc = [oldPinHash ykf_aes256EncryptedDataWithKey:sharedSecret];
+        changePinRequest.pinHashEnc = [oldPinHash ykf_encryptDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
 
-        changePinRequest.pinEnc = [newPinData ykf_aes256EncryptedDataWithKey:sharedSecret];
+        changePinRequest.pinEnc = [newPinData ykf_encryptDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
         
         NSMutableData *pinAuthData = [NSMutableData dataWithData:changePinRequest.pinEnc];
         [pinAuthData appendData:changePinRequest.pinHashEnc];
-        changePinRequest.pinAuth = [[pinAuthData ykf_fido2HMACWithKey:sharedSecret] subdataWithRange:NSMakeRange(0, 16)];
+        changePinRequest.pinAuth = [pinAuthData ykf_authenticateDataWithKey:sharedSecret pinProtocol:self.pinProtocol];
         
         [strongSelf executeClientPinRequest:changePinRequest completion:^(YKFFIDO2ClientPinResponse *response, NSError *error) {
             if (error) {
@@ -340,7 +340,7 @@ typedef void (^YKFFIDO2SessionClientPinSharedSecretCompletionBlock)
     YKFParameterAssertReturn(completion);
     
     YKFFIDO2ClientPinRequest *pinRetriesRequest = [[YKFFIDO2ClientPinRequest alloc] init];
-    pinRetriesRequest.pinProtocol = 1;
+    pinRetriesRequest.pinProtocol = self.pinProtocol;
     pinRetriesRequest.subCommand = YKFFIDO2ClientPinRequestSubCommandGetRetries;
     
     [self executeClientPinRequest:pinRetriesRequest completion:^(YKFFIDO2ClientPinResponse *response, NSError *error) {
