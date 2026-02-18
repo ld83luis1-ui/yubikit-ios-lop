@@ -164,38 +164,46 @@ int maxPinAttempts = 3;
                            scpKeyParams:(id<YKFSCPKeyParamsProtocol>)scpKeyParams
                              completion:(YKFPIVSessionCompletion _Nonnull)completion {
     YKFPIVSession *session = [YKFPIVSession new];
+    session.features = [YKFPIVSessionFeatures new];
     session.smartCardInterface = [[YKFSmartCardInterface alloc] initWithConnectionController:connectionController];
-    
+
     YKFSelectApplicationAPDU *apdu = [[YKFSelectApplicationAPDU alloc] initWithApplicationName:YKFSelectApplicationAPDUNamePIV];
     [session.smartCardInterface selectApplication:apdu completion:^(NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
             completion(nil, error);
-        } else {
+            return;
+        }
+
+        // Helper block to get version after SCP is established (or immediately if no SCP)
+        void (^getVersionAndComplete)(void) = ^{
             YKFAPDU *versionAPDU = [[YKFAPDU alloc] initWithCla:0 ins:YKFPIVInsGetVersion p1:0 p2:0 data:[NSData data] type:YKFAPDUTypeShort];
             [session.smartCardInterface executeCommand:versionAPDU completion:^(NSData * _Nullable data, NSError * _Nullable error) {
                 if (error) {
                     completion(nil, error);
-                } else {
-                    if ([data length] < 3) {
-                        completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeInvalidResponse userInfo:@{NSLocalizedDescriptionKey: @"Invalid response when retrieving PIV version."}]);
-                        return;
-                    }
-                    UInt8 *versionBytes = (UInt8 *)data.bytes;
-                    session.version = [[YKFVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
-                    if (scpKeyParams) {
-                        [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
-                            if (error) {
-                                completion(nil, error);
-                            } else {
-                                session.smartCardInterface.scpProcessor = processor;
-                                completion(session, nil);
-                            }
-                        }];
-                    } else {
-                        completion(session, nil);
-                    }
+                    return;
                 }
+                if ([data length] < 3) {
+                    completion(nil, [[NSError alloc] initWithDomain:YKFPIVErrorDomain code:YKFPIVErrorCodeInvalidResponse userInfo:@{NSLocalizedDescriptionKey: @"Invalid response when retrieving PIV version."}]);
+                    return;
+                }
+                UInt8 *versionBytes = (UInt8 *)data.bytes;
+                session.version = [[YKFVersion alloc] initWithBytes:versionBytes[0] minor:versionBytes[1] micro:versionBytes[2]];
+                completion(session, nil);
             }];
+        };
+
+        // Establish SCP before getVersion so the command is sent over the secure channel.
+        if (scpKeyParams) {
+            [YKFSCPProcessor processorWithSCPKeyParams:scpKeyParams sendRemainingIns:YKFSmartCardInterfaceSendRemainingInsNormal usingSmartCardInterface:session.smartCardInterface completion:^(YKFSCPProcessor * _Nullable processor, NSError * _Nullable error) {
+                if (error) {
+                    completion(nil, error);
+                    return;
+                }
+                session.smartCardInterface.scpProcessor = processor;
+                getVersionAndComplete();
+            }];
+        } else {
+            getVersionAndComplete();
         }
     }];
 }
