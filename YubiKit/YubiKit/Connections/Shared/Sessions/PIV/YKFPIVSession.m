@@ -111,16 +111,59 @@ typedef void (^YKFPIVSessionDataCompletionBlock)
 
 - (NSData *)objectIdForSlot:(YKFPIVSlot)slot {
     switch (slot) {
-        case YKFPIVSlotSignature:
-            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0a} length:3];
-        case YKFPIVSlotAttestation:
-            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xff, 0x01} length:3];
         case YKFPIVSlotAuthentication:
             return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x05} length:3];
-        case YKFPIVSlotCardAuth:
-            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x01} length:3];
+        case YKFPIVSlotSignature:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0a} length:3];
         case YKFPIVSlotKeyManagement:
             return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0b} length:3];
+        case YKFPIVSlotCardAuth:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x01} length:3];
+
+        case YKFPIVSlotRetired1:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0d} length:3];
+        case YKFPIVSlotRetired2:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0e} length:3];
+        case YKFPIVSlotRetired3:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x0f} length:3];
+        case YKFPIVSlotRetired4:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x10} length:3];
+        case YKFPIVSlotRetired5:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x11} length:3];
+        case YKFPIVSlotRetired6:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x12} length:3];
+        case YKFPIVSlotRetired7:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x13} length:3];
+        case YKFPIVSlotRetired8:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x14} length:3];
+        case YKFPIVSlotRetired9:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x15} length:3];
+        case YKFPIVSlotRetired10:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x16} length:3];
+        case YKFPIVSlotRetired11:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x17} length:3];
+        case YKFPIVSlotRetired12:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x18} length:3];
+        case YKFPIVSlotRetired13:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x19} length:3];
+        case YKFPIVSlotRetired14:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x1a} length:3];
+        case YKFPIVSlotRetired15:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x1b} length:3];
+        case YKFPIVSlotRetired16:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x1c} length:3];
+        case YKFPIVSlotRetired17:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x1d} length:3];
+        case YKFPIVSlotRetired18:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x1e} length:3];
+        case YKFPIVSlotRetired19:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x1f} length:3];
+        case YKFPIVSlotRetired20:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xc1, 0x20} length:3];
+
+        case YKFPIVSlotAttestation:
+            return [NSData dataWithBytes:(UInt8[]){0x5f, 0xff, 0x01} length:3];
+
         default:
             [NSException raise:@"UnknownObjectId" format:@"No matching object id for this slot."];
             break;

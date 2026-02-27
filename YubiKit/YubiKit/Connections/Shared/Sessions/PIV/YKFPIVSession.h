@@ -43,6 +43,28 @@ typedef NS_ENUM(NSUInteger, YKFPIVSlot) {
     YKFPIVSlotSignature = 0x9c,
     YKFPIVSlotKeyManagement = 0x9d,
     YKFPIVSlotCardAuth = 0x9e,
+
+    YKFPIVSlotRetired1 = 0x82,
+    YKFPIVSlotRetired2 = 0x83,
+    YKFPIVSlotRetired3 = 0x84,
+    YKFPIVSlotRetired4 = 0x85,
+    YKFPIVSlotRetired5 = 0x86,
+    YKFPIVSlotRetired6 = 0x87,
+    YKFPIVSlotRetired7 = 0x88,
+    YKFPIVSlotRetired8 = 0x89,
+    YKFPIVSlotRetired9 = 0x8a,
+    YKFPIVSlotRetired10 = 0x8b,
+    YKFPIVSlotRetired11 = 0x8c,
+    YKFPIVSlotRetired12 = 0x8d,
+    YKFPIVSlotRetired13 = 0x8e,
+    YKFPIVSlotRetired14 = 0x8f,
+    YKFPIVSlotRetired15 = 0x90,
+    YKFPIVSlotRetired16 = 0x91,
+    YKFPIVSlotRetired17 = 0x92,
+    YKFPIVSlotRetired18 = 0x93,
+    YKFPIVSlotRetired19 = 0x94,
+    YKFPIVSlotRetired20 = 0x95,
+
     YKFPIVSlotAttestation = 0xf9
 };
 
